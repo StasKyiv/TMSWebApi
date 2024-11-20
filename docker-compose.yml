@@ -1,0 +1,56 @@
+﻿services:
+  webapi:
+    image: webapi
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+
+  angularclient:
+    image: angular-client
+    build:
+      context: ..
+      dockerfile: TMSClient/TaskManagmentClient/Dockerfile
+    ports:
+      - "4200:4200"  # Exposing Angular app on port 4200
+    depends_on:
+      - backend
+    environment:
+      - BACKEND_URL=http://backend:8080  # Set environment variable to refer to backend service
+    networks:
+      - default  # Use default network
+
+  backend:
+    image: backendservice
+    build:
+      context: ..
+      dockerfile: BackendService/Dockerfile
+    environment:
+      AzureServiceBus_ConnectionString: "Endpoint=sb://taskmanagerservicebus.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=ISbUHwEJNPNpVpu7Tn6PZBLSeIlxZCQxO+ASbE1rfIM="
+      ConnectionStrings__SqlServer: "Server=localhost,1433; Database=MyDatabase; User Id=sa; Password=Test12345;TrustServerCertificate=True;"
+    depends_on:
+      - webapi
+      - db
+    networks:
+      - default  # Use default network
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Test12345
+    ports:
+      - "1433:1433"
+    volumes:
+      - sql-data:/var/opt/mssql
+    networks:
+      - default  # Use default network
+
+volumes:
+  sql-data:
+
+networks:
+  default: # Ensure all services are part of the default network
+    driver: bridge  # Optionally define the network driver

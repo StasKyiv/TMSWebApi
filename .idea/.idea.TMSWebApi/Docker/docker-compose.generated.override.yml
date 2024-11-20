@@ -1,0 +1,21 @@
+# This is a generated file. Not intended for manual editing.
+services:
+  webapi:
+    build:
+      context: "/Users/stanislav/Desktop/TaskManagementSystem/TMSWebApi"
+      dockerfile: "Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net8.0/TMSWebApi.dll"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "webapi:dev"
+    ports: []
+    volumes:
+    - "/Users/stanislav/Desktop/TaskManagementSystem/TMSWebApi:/app:rw"
+    - "/Users/stanislav/Desktop/TaskManagementSystem/TMSWebApi:/src:rw"
+    - "/Users/stanislav/.nuget/packages:/home/app/.nuget/packages"
+    working_dir: "/app"
